@@ -4,7 +4,9 @@ import android.os.Bundle
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.coroutines.*
-import libv2ray.Libv2ray
+import java.net.InetSocketAddress
+import java.net.Socket
+import kotlin.system.measureTimeMillis
 
 class MainActivity : AppCompatActivity() {
 
@@ -28,106 +30,76 @@ class MainActivity : AppCompatActivity() {
         spinnerProtocol = findViewById(R.id.spinnerProtocol)
         textResults = findViewById(R.id.textResults)
 
-        // Parse VLESS/VMess link
         findViewById<Button>(R.id.btnParseConfig).setOnClickListener {
             val config = inputPasteConfig.text.toString().trim()
-            if (config.startsWith("vless://")) {
-                parseVless(config)
+            if (config.startsWith("vless://") || config.startsWith("vmess://")) {
+                parseConfigLink(config)
             } else {
-                Toast.makeText(this, "Please paste a valid vless:// link", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Paste a valid vless:// or vmess:// link", Toast.LENGTH_SHORT).show()
             }
         }
 
-        // Start Real Delay Test via Xray-Core
         findViewById<Button>(R.id.btnStartTest).setOnClickListener {
             val domains = inputBulkDomains.text.toString().split("\n").filter { it.isNotBlank() }
-            if (domains.isEmpty()) return@setOnClickListener
+            if (domains.isEmpty()) {
+                Toast.makeText(this, "Enter at least one domain", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
 
-            val uuid = inputUuid.text.toString()
-            val port = inputPort.text.toString().toIntOrNull() ?: 443
+            val targetPort = inputPort.text.toString().toIntOrNull() ?: 443
+            textResults.text = "Executing bulk connectivity check (${domains.size} domains)...\n\n"
 
-            textResults.text = "Testing ${domains.size} domains via Xray Core...\n\n"
-            
             CoroutineScope(Dispatchers.IO).launch {
                 for (domain in domains) {
-                    val cleanDomain = domain.trim()
-                    
+                    val cleanHost = domain.trim()
                     withContext(Dispatchers.Main) {
-                        textResults.append("Probing: $cleanDomain... ")
+                        textResults.append("Testing $cleanHost... ")
                     }
 
-                    // Generate a basic Xray Outbound JSON config for testing
-                    val configJson = buildBasicXrayConfig(cleanDomain, port, uuid, cleanDomain)
-                    
-                    // Call the native Xray engine to measure the real delay to Google
-                    try {
-                        val pingMs = Libv2ray.measureOutboundDelay(
-                            configJson, 
-                            "https://connectivitycheck.gstatic.com/generate_204"
-                        )
-                        
-                        withContext(Dispatchers.Main) {
-                            if (pingMs > 0) {
-                                textResults.append("✅ ${pingMs}ms\n")
-                            } else {
-                                textResults.append("❌ Failed\n")
-                            }
-                        }
-                    } catch (e: Exception) {
-                        withContext(Dispatchers.Main) {
-                            textResults.append("❌ Error\n")
+                    val latency = measureSocketLatency(cleanHost, targetPort)
+
+                    withContext(Dispatchers.Main) {
+                        if (latency >= 0) {
+                            textResults.append("✅ Active (${latency}ms)\n")
+                        } else {
+                            textResults.append("❌ Timeout / Dead\n")
                         }
                     }
                 }
                 withContext(Dispatchers.Main) {
-                    textResults.append("\nDone!")
+                    textResults.append("\nAll tests completed!")
                 }
             }
         }
     }
 
-    private fun parseVless(config: String) {
+    private fun parseConfigLink(config: String) {
         try {
-            val withoutPrefix = config.removePrefix("vless://")
+            val prefix = if (config.startsWith("vless://")) "vless://" else "vmess://"
+            val withoutPrefix = config.removePrefix(prefix)
             val uuidAndRest = withoutPrefix.split("@")
-            inputUuid.setText(uuidAndRest[0])
-            
-            val ipAndRest = uuidAndRest[1].split(":")
-            inputAddress.setText(ipAndRest[0])
-            
-            val portAndParams = ipAndRest[1].split("?")
-            inputPort.setText(portAndParams[0].split("#")[0])
-            spinnerProtocol.setSelection(0)
-            
-            Toast.makeText(this, "Parsed successfully!", Toast.LENGTH_SHORT).show()
+            if (uuidAndRest.size > 1) {
+                inputUuid.setText(uuidAndRest[0])
+                val ipAndRest = uuidAndRest[1].split(":")
+                inputAddress.setText(ipAndRest[0])
+                val portAndParams = ipAndRest[1].split("?")
+                inputPort.setText(portAndParams[0].split("#")[0])
+            }
+            Toast.instance(this, "Parsed successfully!", Toast.LENGTH_SHORT).show()
         } catch (e: Exception) {
-            Toast.makeText(this, "Failed to parse link", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Parsing failed. Fill fields manually.", Toast.LENGTH_SHORT).show()
         }
     }
 
-    // Creates the JSON string required by Xray-core to open a connection
-    private fun buildBasicXrayConfig(ip: String, port: Int, uuid: String, sni: String): String {
-        return """
-        {
-            "outbounds": [{
-                "protocol": "vless",
-                "settings": {
-                    "vnext": [{
-                        "address": "$ip",
-                        "port": $port,
-                        "users": [{"id": "$uuid", "encryption": "none"}]
-                    }]
-                },
-                "streamSettings": {
-                    "network": "tcp",
-                    "security": "tls",
-                    "tlsSettings": {
-                        "serverName": "$sni",
-                        "allowInsecure": true
-                    }
+    private fun measureSocketLatency(host: String, port: Int): Long {
+        return measureTimeMillis {
+            try {
+                Socket().use { socket ->
+                    socket.connect(InetSocketAddress(host, port), 2000)
                 }
-            }]
-        }
-        """.trimIndent()
+            } catch (e: Exception) {
+                return -1L
+            }
+        }.let { time -> if (time >= 2000) -1L else time }
     }
 }
