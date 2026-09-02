@@ -73,7 +73,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         } catch (e: Exception) {
-            Toast.makeText(this, "Init Error: ${e.localizedMessage}",coons = Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Init Error: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
         }
     }
 
