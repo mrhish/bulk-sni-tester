@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Bulk Tester</string>
+    <string-array name="protocol_array">
+        <item>VLESS</item>
+        <item>VMess</item>
+        <item>Trojan</item>
+    </string-array>
+</resources>
