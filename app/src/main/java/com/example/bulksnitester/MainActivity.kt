@@ -85,7 +85,7 @@ class MainActivity : AppCompatActivity() {
                 val portAndParams = ipAndRest[1].split("?")
                 inputPort.setText(portAndParams[0].split("#")[0])
             }
-            Toast.instance(this, "Parsed successfully!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Parsed successfully!", Toast.LENGTH_SHORT).show()
         } catch (e: Exception) {
             Toast.makeText(this, "Parsing failed. Fill fields manually.", Toast.LENGTH_SHORT).show()
         }
