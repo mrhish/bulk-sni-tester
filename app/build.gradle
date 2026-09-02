@@ -30,7 +30,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.9.0'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1'
     
-    // Valid tag matching the Xray core repository on JitPack
-    implementation 'com.github.2dust:AndroidLibXrayLite:v26.8.20'
+    // Fixed JitPack reference path for Xray core engine
+    implementation 'com.github.2dust.AndroidLibXrayLite:library:v26.8.20'
     implementation 'com.google.code.gson:gson:2.10.1'
 }
