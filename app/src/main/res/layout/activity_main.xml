@@ -1,54 +1,141 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:background="#F5F5F5"
     android:padding="16dp">
 
-    <EditText
-        android:id="@+id/inputStaticIp"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Server IP (Static)" />
+        android:orientation="vertical">
 
-    <EditText
-        android:id="@+id/inputUuid"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="UUID" />
+        <!-- Smart Paste Card -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="4dp"
+            android:layout_marginBottom="16dp">
+            
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+                
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Smart Paste (vless:// or vmess://)"
+                    android:textStyle="bold" />
+                    
+                <EditText
+                    android:id="@+id/inputPasteConfig"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Paste full config link here..." />
+                    
+                <Button
+                    android:id="@+id/btnParseConfig"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Auto-Fill Below"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Paste Bulk Domains:"
-        android:textStyle="bold"
-        android:layout_marginTop="16dp"/>
+        <!-- Manual Settings Card -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="4dp"
+            android:layout_marginBottom="16dp">
 
-    <EditText
-        android:id="@+id/inputBulkDomains"
-        android:layout_width="match_parent"
-        android:layout_height="150dp"
-        android:gravity="top"
-        android:hint="domain1.com\ndomain2.com"
-        android:inputType="textMultiLine" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
 
-    <Button
-        android:id="@+id/btnTest"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Start Test" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Server Settings"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="8dp"/>
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_marginTop="16dp">
-        
+                <Spinner
+                    android:id="@+id/spinnerProtocol"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:entries="@array/protocol_array"
+                    android:layout_marginBottom="8dp"/>
+
+                <EditText
+                    android:id="@+id/inputAddress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Address (IP or Domain)" />
+
+                <EditText
+                    android:id="@+id/inputPort"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Port (e.g. 443)"
+                    android:inputType="number" />
+
+                <EditText
+                    android:id="@+id/inputUuid"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="UUID" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Bulk Testing Card -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="4dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Bulk Domains (One per line)"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/inputBulkDomains"
+                    android:layout_width="match_parent"
+                    android:layout_height="120dp"
+                    android:gravity="top"
+                    android:inputType="textMultiLine" />
+
+                <Button
+                    android:id="@+id/btnStartTest"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="START REAL DELAY TEST" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
         <TextView
             android:id="@+id/textResults"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
             android:fontFamily="monospace"
-            android:text="Results will appear here...\n" />
-    </ScrollView>
-</LinearLayout>
+            android:text="Results:\n" />
+
+    </LinearLayout>
+</ScrollView>
