@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <EditText
+        android:id="@+id/inputStaticIp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Server IP (Static)" />
+
+    <EditText
+        android:id="@+id/inputUuid"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="UUID" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Paste Bulk Domains:"
+        android:textStyle="bold"
+        android:layout_marginTop="16dp"/>
+
+    <EditText
+        android:id="@+id/inputBulkDomains"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:gravity="top"
+        android:hint="domain1.com\ndomain2.com"
+        android:inputType="textMultiLine" />
+
+    <Button
+        android:id="@+id/btnTest"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Start Test" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="16dp">
+        
+        <TextView
+            android:id="@+id/textResults"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="monospace"
+            android:text="Results will appear here...\n" />
+    </ScrollView>
+</LinearLayout>
